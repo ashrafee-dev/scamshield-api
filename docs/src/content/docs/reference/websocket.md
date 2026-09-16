@@ -9,6 +9,16 @@ description: Real-time audio analysis.
 wss://api.scamshield.click/ws
 ```
 
+## Supported Formats
+
+- MP3
+- M4A
+- MP4
+- WAV
+- WebM
+- OGG
+- FLAC
+
 ## Flow
 
 1. Connect.

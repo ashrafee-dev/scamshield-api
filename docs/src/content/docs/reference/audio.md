@@ -11,6 +11,7 @@ Uploads an audio file.
 
 - MP3
 - M4A
+- MP4
 - WAV
 - WebM
 - OGG

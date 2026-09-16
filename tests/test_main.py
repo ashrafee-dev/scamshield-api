@@ -1,5 +1,12 @@
 from unittest.mock import MagicMock
+
 import pytest
+
+
+EXPECTED_UNSUPPORTED_AUDIO_ERROR = (
+    "Unsupported audio content type. "
+    "Accepted formats: MP3, M4A, MP4, WAV, WebM, OGG, FLAC."
+)
 
 
 def test_email_check(client, mocker):
@@ -25,6 +32,26 @@ def test_email_check(client, mocker):
     assert "score" in result
     assert "certainty" in result
     assert "reason" in result
+
+
+def test_http_unsupported_audio_error(client):
+    response = client.post(
+        "/audio",
+        files={"file": ("invalid.txt", b"not audio", "text/plain")},
+    )
+
+    assert response.status_code == 415
+    assert response.json() == {
+        "detail": {"error": EXPECTED_UNSUPPORTED_AUDIO_ERROR}
+    }
+
+
+def test_websocket_unsupported_audio_error(client):
+    with client.websocket_connect("/ws") as websocket:
+        websocket.send_bytes(b"not audio")
+        response = websocket.receive_json()
+
+    assert response == {"error": EXPECTED_UNSUPPORTED_AUDIO_ERROR}
 
 
 def test_audio_check(client, mocker):
@@ -73,3 +100,29 @@ def test1(client, audio_bytes, mocker):
         assert "score" in result
         assert "certainty" in result
         assert "reason" in result
+
+
+def test_http_oversized_audio_error_includes_limit(client, monkeypatch):
+    one_mb = 1024 * 1024
+    monkeypatch.setattr("app.api.analyze.MAX_FILE_SIZE", one_mb)
+
+    response = client.post(
+        "/audio",
+        files={"file": ("large.mp3", b"0" * (one_mb + 1), "audio/mpeg")},
+    )
+
+    assert response.status_code == 413
+    assert response.json() == {
+        "detail": {"error": "File too large. Max size is 1MB."}
+    }
+
+
+def test_websocket_oversized_audio_error_includes_limit(client, monkeypatch):
+    one_mb = 1024 * 1024
+    monkeypatch.setattr("app.api.analyze.MAX_FILE_SIZE", one_mb)
+
+    with client.websocket_connect("/ws") as websocket:
+        websocket.send_bytes(b"0" * (one_mb + 1))
+        response = websocket.receive_json()
+
+    assert response == {"error": "File too large. Max size is 1MB."}
