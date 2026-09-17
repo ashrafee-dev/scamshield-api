@@ -21,6 +21,12 @@ Allowed = {
     "audio/ogg",
     "audio/flac",
 }
+SUPPORTED_AUDIO_FORMATS = ("MP3", "M4A", "MP4", "WAV", "WebM", "OGG", "FLAC")
+
+UNSUPPORTED_AUDIO_ERROR = (
+    "Unsupported audio content type. "
+    f"Accepted formats: {', '.join(SUPPORTED_AUDIO_FORMATS)}."
+)
 
 @router.post("/email")
 def email_check(item: information, request: Request)-> riskAssessment | dict | None:
@@ -42,7 +48,7 @@ def audio_check(file:UploadFile, request: Request)-> riskAssessment | dict | Non
     kind = filetype.guess(byte)
 
     if kind is None or kind.mime not in Allowed:
-        raise HTTPException (status_code= 415, detail= {"error":"Content type not allowed"})
+        raise HTTPException (status_code= 415, detail= {"error": UNSUPPORTED_AUDIO_ERROR})
     tmp_dir = "/dev/shm/" if os.path.exists("/dev/shm") else ""
     filename = f"{tmp_dir}audio{uuid.uuid4()}.{kind.extension}"
     with open(filename, "wb") as f:
@@ -69,7 +75,7 @@ async def websocket_endpoint(websocket: WebSocket)-> riskAssessment | str | None
             kind = filetype.guess(byte) 
 
             if kind is None or kind.mime not in Allowed:
-                await websocket.send_json({"error": "Content type not allowed"})
+                await websocket.send_json({"error": UNSUPPORTED_AUDIO_ERROR})
                 continue
             tmp_dir = "/dev/shm/" if os.path.exists("/dev/shm") else ""
             filename = f"{tmp_dir}audio{uuid.uuid4()}.{kind.extension}"
