@@ -19,9 +19,11 @@ testpaths = ["tests"]
 
 [dependency-groups]
 dev = [
-    "pylint>=4.0.6",
-    "pytest>=9.1.1",
-    "pytest-asyncio>=1.4.0",
+     "fakeredis>=2.38.0",
+     "pylint>=4.0.6",
+     "pytest>=9.1.1",
+     "pytest-asyncio>=1.4.0",
+     "pytest-mock>=3.15.1",
 ]
 [tool.pylint.'MESSAGES CONTROL']
 disable = [

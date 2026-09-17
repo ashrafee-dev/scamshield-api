@@ -17,7 +17,15 @@ description: Common API errors.
 
 ```json
 {
-  "error":"Unsupported audio format"
+  "error": "Unsupported audio content type. Accepted formats: MP3, M4A, MP4, WAV, WebM, OGG, FLAC."
+}
+```
+
+## File Too Large
+
+```json
+{
+  "error": "File too large. Max size is 25MB."
 }
 ```
 

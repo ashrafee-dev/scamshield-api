@@ -24,6 +24,7 @@ def check_rate_limit(ip: str) -> bool:
                     },
                 )
                 r.hincrby(ip, "NUM_REQUESTS", -1)
+                r.expire(ip, RATE_LIMIT_WINDOW)
             return True
     else:
         r.hset(
@@ -33,5 +34,6 @@ def check_rate_limit(ip: str) -> bool:
                 "LAST_REQUEST_TIME": now,
             },
         )
+        r.expire(ip, RATE_LIMIT_WINDOW)
     r.hincrby(ip, "NUM_REQUESTS", -1)
     return True
