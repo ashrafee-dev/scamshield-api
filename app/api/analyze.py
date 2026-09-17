@@ -28,14 +28,37 @@ UNSUPPORTED_AUDIO_ERROR = (
     f"Accepted formats: {', '.join(SUPPORTED_AUDIO_FORMATS)}."
 )
 
-@router.post("/email")
+@router.post(
+    "/email",
+    summary="Analyze email content for scam risk",
+    description=(
+        "Analyze the submitted email body and return a scam risk assessment. "
+        "Requests are rate-limited per client."
+    ),
+    responses={
+        429: {"description": "Rate limit exceeded."},
+    },
+)
 def email_check(item: information, request: Request)-> riskAssessment | dict | None:
     assert request.client is not None
     if not rate_limit.check_rate_limit(request.client.host):
         raise HTTPException (status_code= 429, detail= {"error":"Reached your limit, wait 60 seconds before requesting again"})
     return get_assessment(item.body)
 
-@router.post("/audio")
+@router.post(
+    "/audio",
+    summary="Analyze an audio file for scam risk",
+    description=(
+        "Upload a supported audio file for transcription and scam risk analysis. "
+        "The endpoint enforces the configured maximum file size and validates "
+        "the detected audio format."
+    ),
+    responses={
+        413: {"description": "Uploaded audio exceeds the configured size limit."},
+        415: {"description": "Uploaded content is not a supported audio format."},
+        429: {"description": "Rate limit exceeded."},
+    },
+)
 def audio_check(file:UploadFile, request: Request)-> riskAssessment | dict | None:
 
 
@@ -59,6 +82,11 @@ def audio_check(file:UploadFile, request: Request)-> riskAssessment | dict | Non
 
 @router.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket)-> riskAssessment | str | None:
+    """Analyze streaming audio over a WebSocket connection.
+
+    The client sends audio bytes. Supported audio is transcribed and analyzed,
+    while oversized or unsupported payloads receive an error response.
+    """
     await websocket.accept()
 
     try:
@@ -90,4 +118,3 @@ async def websocket_endpoint(websocket: WebSocket)-> riskAssessment | str | None
                 await websocket.send_json(assessment.model_dump())
     except WebSocketDisconnect:
         print("Client disconnected")
-
