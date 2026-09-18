@@ -1,9 +1,9 @@
 # ScamShield API
 
-A FastAPI-powered API for analyzing scam emails and scam  using local transcription and AI-based risk assessment.
+A FastAPI-powered API for analyzing scam emails and scam audio using local transcription and AI-based risk assessment.
 
 ## Features
-Risk Assesment for:
+Risk Assessment for:
 -  Email scam analysis
 -  Audio file scam analysis (e.g. recorded call)
 -  Real-time audio analysis over WebSockets (e.g. live call)
