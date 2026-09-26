@@ -1,41 +1,28 @@
 ---
 title: Quick Start
-description: Make your first request to ScamShield.
+description: Make an authenticated text or audio request.
 ---
 
-# Quick Start
+Deploy your own instance using the [deployment guide](/guides/deployment/).
+Set `SCAMSHIELD_API_KEY` in your client environment to one configured server token.
+Replace the local URL with your HTTPS deployment URL for remote clients.
 
-## Base URL
-
-```text
-https://api.scamshield.click
-```
-
----
-
-## Email Analysis
+## Text analysis
 
 ```bash
-curl -X POST https://api.scamshield.click/email \
--H "Content-Type: application/json" \
--d '{
-  "body":"Congratulations! You have won $10,000."
-}'
+curl http://localhost:8000/text \
+  -H "Authorization: Bearer $SCAMSHIELD_API_KEY" \
+  -H 'Content-Type: application/json' \
+  -d '{"body":"Congratulations! Pay a fee to claim $10,000."}'
 ```
 
----
-
-## Audio Analysis
+## Audio analysis
 
 ```bash
-curl -X POST https://api.scamshield.click/audio \
--F "file=@sample.mp3"
+curl http://localhost:8000/audio \
+  -H "Authorization: Bearer $SCAMSHIELD_API_KEY" \
+  -F 'file=@sample.mp3'
 ```
 
----
-
-## WebSocket
-
-```
-wss://api.scamshield.click/ws
-```
+Text and transcripts are sent to DeepSeek after best-effort redaction; see
+[privacy and client integration](/guides/privacy/) before connecting end users.
