@@ -1,0 +1,10 @@
+# Repository notes
+
+- Python 3.13+ with uv: `uv sync --dev --frozen`, then `bash scripts/check.sh` (tests, then pylint; fails fast). Run from the root because audio tests use `tests/test_audio.m4a`. Focused test: `uv run pytest tests/test_security.py::test_text_contract_and_legacy_email`.
+- `tests/conftest.py` supplies fake credentials, authenticated TestClient headers, Whisper stubbing, and fresh fakeredis per test. No model downloads or paid API calls are needed. Remove the client's Authorization header explicitly when testing unauthenticated requests.
+- `app/main.py` mounts `app/api/analyze.py`: `/text` is primary, `/email` is a deprecated alias, and `/ws` accepts complete clips rather than partial audio streams. HTTP bearer dependencies document auth; `app/middleware.py` also rejects invalid tokens before multipart parsing.
+- Live startup requires `DEEPSEEK_API_KEY` and `SCAMSHIELD_API_KEYS` (comma-separated random backend tokens, each >=32 characters). Redis 7+ is required for `EXPIRE NX`; quotas are per token, shared across transports. Browser extensions need a user-authenticated gateway, not an embedded shared token.
+- Audio requires the FFmpeg executable, not a Python FFmpeg wrapper. Whisper loads lazily unless `PRELOAD_WHISPER=true`; Compose enables preloading and persists its cache. Linux uses the explicit CPU PyTorch index in `pyproject.toml`; preserve it when updating `uv.lock`.
+- Deployment uses `docker compose up --build -d` after configuring `.env`; see `docs/src/content/docs/guides/deployment.md`. Keep `scripts/serve.sh` WebSocket size/queue limits aligned with upload settings. `/ready` checks Redis, not DeepSeek or model accuracy.
+- `scripts/smoke.py` runs via stdin inside a running test container (`docker exec -i <container> python < scripts/smoke.py`); it exercises real Redis/FFmpeg with mocked inference and consumes the test token's quota. Do not run against a production instance.
+- `docs/` is an independent Astro/Starlight site: run `npm ci` and `npm run build` there. CI checks Python, docs, and the container smoke path; live model/provider acceptance checks remain separate.

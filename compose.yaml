@@ -1,0 +1,49 @@
+services:
+  api:
+    build: .
+    init: true
+    restart: unless-stopped
+    env_file: ${SCAMSHIELD_ENV_FILE:-.env}
+    environment:
+      REDIS_URL: redis://redis:6379/0
+      PRELOAD_WHISPER: "true"
+    ports:
+      - "127.0.0.1:8000:8000"
+    volumes:
+      - whisper-cache:/home/app/.cache
+    tmpfs:
+      - /tmp:size=256m,mode=1777
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    mem_limit: 6g
+    cpus: 2
+    pids_limit: 128
+    depends_on:
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: [CMD, python, -c, "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/ready', timeout=3)"]
+      interval: 30s
+      timeout: 5s
+      start_period: 10m
+      retries: 3
+
+  redis:
+    image: redis:7.4-alpine
+    restart: unless-stopped
+    command: [redis-server, --save, "", --appendonly, "no", --maxmemory, 128mb, --maxmemory-policy, noeviction]
+    read_only: true
+    tmpfs: [/data]
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    user: redis
+    mem_limit: 256m
+    healthcheck:
+      test: [CMD, redis-cli, ping]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+volumes:
+  whisper-cache:
