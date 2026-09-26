@@ -1,25 +1,25 @@
 ---
 title: ScamShield API
-description: AI-powered scam detection for emails and audio.
+description: AI-powered scam risk assessment for text and audio.
 template: splash
 
 hero:
   title: ScamShield API
-  tagline: Detect scam emails and audio with a simple REST API.
+  tagline: Assess suspicious text and audio with an authenticated API.
   actions:
     - text: Quick Start
       link: /guides/quickstart/
       icon: right-arrow
     - text: API Reference
-      link: /reference/email/
+      link: /reference/text/
       icon: open-book
 ---
 
 import { Card, CardGrid } from '@astrojs/starlight/components';
 
 <CardGrid>
-  <Card title="Email Detection" icon="mail">
-    Analyze suspicious emails using our REST API.
+  <Card title="Text Analysis" icon="mail">
+    Analyze messages, emails, and selected text using our REST API.
   </Card>
 
   <Card title="Audio Detection" icon="microphone">
@@ -27,7 +27,7 @@ import { Card, CardGrid } from '@astrojs/starlight/components';
   </Card>
 
   <Card title="WebSocket API" icon="server">
-    Send audio in real time over WebSockets.
+    Analyze complete audio clips over authenticated WebSockets.
   </Card>
 
   <Card title="Open Source" icon="github">

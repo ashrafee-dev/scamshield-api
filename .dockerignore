@@ -1,0 +1,9 @@
+*
+!app/
+!app/**
+!scripts/
+!scripts/serve.sh
+!pyproject.toml
+!uv.lock
+**/__pycache__/
+**/*.pyc
