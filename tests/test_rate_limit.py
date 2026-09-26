@@ -41,7 +41,7 @@ def test_exhausted_quota_resets_after_configured_window(mock_redis, mock_time):
 
 @patch("app.services.rate_limit.time.time", return_value=1_000.0)
 @patch("app.services.rate_limit.r")
-def test_configured_window_is_honored(mock_redis, mock_time, monkeypatch):
+def test_configured_window_is_honored(mock_redis, _mock_time, monkeypatch):
     monkeypatch.setattr(rate_limit_mod, "RATE_LIMIT_WINDOW", 30)
 
     # 31 seconds ago is outside a 30s window, so the quota should reset.
@@ -55,7 +55,7 @@ def test_configured_window_is_honored(mock_redis, mock_time, monkeypatch):
 
     assert rate_limit_mod.check_rate_limit("203.0.113.12") is False
     mock_redis.hset.assert_not_called()
-    
+
 @patch("app.services.rate_limit.time.time", return_value=1_000.0)
 @patch("app.services.rate_limit.r")
 def test_check_rate_limit_key_has_expiry(mock_redis, mock_time):

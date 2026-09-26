@@ -1,14 +1,14 @@
 import sys
 from unittest.mock import MagicMock
 
+import fakeredis
+import pytest
+from fastapi.testclient import TestClient
+
 # Prevent network calls from whisper model initialization during local execution
 sys.modules["whisper"] = MagicMock()
 
-from fastapi.testclient import TestClient
-import fakeredis
-import pytest
-
-from app.main import app
+from app.main import app  # pylint: disable=wrong-import-position
 
 
 @pytest.fixture
