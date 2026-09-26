@@ -1,10 +1,9 @@
 import os
+from unittest.mock import patch
 
 os.environ.setdefault("DEEPSEEK_API_KEY", "test-key")
 
-from unittest.mock import patch
-
-from app.services.risk import get_assessment
+from app.services.risk import get_assessment  # pylint: disable=wrong-import-position
 
 
 VALID_RESPONSE = {
