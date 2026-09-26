@@ -1,3 +1,4 @@
+import os
 import sys
 from unittest.mock import MagicMock
 
@@ -7,6 +8,8 @@ from fastapi.testclient import TestClient
 
 # Prevent network calls from whisper model initialization during local execution
 sys.modules["whisper"] = MagicMock()
+os.environ["DEEPSEEK_API_KEY"] = "test-only"
+os.environ["SCAMSHIELD_API_KEYS"] = "test-token-" + "a" * 32
 
 from app.main import app  # pylint: disable=wrong-import-position
 
@@ -14,7 +17,8 @@ from app.main import app  # pylint: disable=wrong-import-position
 @pytest.fixture
 def client():
     """Reusable FastAPI TestClient fixture."""
-    with TestClient(app) as test_client:
+    headers = {"Authorization": "Bearer " + os.environ["SCAMSHIELD_API_KEYS"]}
+    with TestClient(app, headers=headers) as test_client:
         yield test_client
 
 

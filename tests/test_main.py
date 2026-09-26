@@ -13,9 +13,9 @@ def test_email_check(client, mocker):
     mocker.patch(
         "app.api.analyze.get_assessment",
         return_value={
-            "label": "spam",
-            "score": 90,
-            "certainty": "high",
+            "label": "Scam",
+            "score": "High",
+            "certainty": 90,
             "reason": "Suspicious request",
         },
     )
@@ -59,9 +59,9 @@ def test_audio_check(client, mocker):
     mocker.patch(
         "app.api.analyze.get_assessment",
         return_value={
-            "label": "safe",
-            "score": 10,
-            "certainty": "high",
+            "label": "Safe",
+            "score": "Low",
+            "certainty": 90,
             "reason": "No threat",
         },
     )

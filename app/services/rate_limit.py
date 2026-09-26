@@ -1,39 +1,18 @@
-import time
-
 import redis
 
-from app.config import MAX_REQUEST_LIMIT, RATE_LIMIT_WINDOW
+from app.config import MAX_REQUEST_LIMIT, RATE_LIMIT_WINDOW, REDIS_URL
 
-r = redis.Redis(host="localhost", port=6379, decode_responses=True)
+r = redis.Redis.from_url(
+    REDIS_URL, decode_responses=True, socket_connect_timeout=2, socket_timeout=2,
+)
 
 
-def check_rate_limit(ip: str) -> bool:
-    now = time.time()
-    print(now)
-    user = r.hgetall(ip)
-    if user:
-        if int(user["NUM_REQUESTS"]) <= 0:
-            if RATE_LIMIT_WINDOW > now - float(user["LAST_REQUEST_TIME"]):
-                return False
-            else:
-                r.hset(
-                    ip,
-                    mapping={
-                        "NUM_REQUESTS": MAX_REQUEST_LIMIT,
-                        "LAST_REQUEST_TIME": now,
-                    },
-                )
-                r.hincrby(ip, "NUM_REQUESTS", -1)
-                r.expire(ip, RATE_LIMIT_WINDOW)
-            return True
-    else:
-        r.hset(
-            ip,
-            mapping={
-                "NUM_REQUESTS": MAX_REQUEST_LIMIT,
-                "LAST_REQUEST_TIME": now,
-            },
-        )
-        r.expire(ip, RATE_LIMIT_WINDOW)
-    r.hincrby(ip, "NUM_REQUESTS", -1)
-    return True
+def check_rate_limit(identity: str) -> bool:
+    """Atomically count requests in a fixed window, including concurrent callers."""
+    key = f"scamshield:rate:{identity}"
+    with r.pipeline(transaction=True) as pipe:
+        pipe.incr(key)
+        # Redis 7+: only the first request sets the expiry; later requests cannot extend it.
+        pipe.expire(key, RATE_LIMIT_WINDOW, nx=True)
+        count, _ = pipe.execute()
+    return count <= MAX_REQUEST_LIMIT

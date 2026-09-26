@@ -6,13 +6,21 @@ readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
     "fastapi[standard]>=0.139.0",
-    "ffmpeg>=1.4",
-    "ffmpeg-python>=0.2.0",
     "filetype>=1.2.0",
     "openai>=2.45.0",
     "openai-whisper>=20250625",
     "redis>=8.0.1",
+    "torch>=2.6.0",
 ]
+
+[[tool.uv.index]]
+name = "pytorch-cpu"
+url = "https://download.pytorch.org/whl/cpu"
+explicit = true
+
+[tool.uv.sources]
+torch = [{ index = "pytorch-cpu", marker = "sys_platform == 'linux'" }]
+
 [tool.pytest.ini_options]
 pythonpath = ["."]
 testpaths = ["tests"]

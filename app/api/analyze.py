@@ -1,120 +1,114 @@
-import os
 import asyncio
+import os
+import tempfile
+import threading
+
 import filetype
-from fastapi import APIRouter, HTTPException, WebSocketException, UploadFile, WebSocket, WebSocketDisconnect, Request
-from app.services import rate_limit
+from fastapi import APIRouter, Depends, HTTPException, UploadFile, WebSocket, WebSocketDisconnect
+
+from app.config import MAX_FILE_SIZE, CORS_ORIGINS
 from app.models.response import riskAssessment
-from app.models.request import information
-from app.services.risk import get_assessment
-from app.services.transcription import audio_transcript
-from app.config import MAX_FILE_SIZE
-import uuid
+from app.models.request import TextRequest, information
+from app.services.auth import authorize, authorize_websocket, enforce_limit
+from app.services.risk import get_assessment, AssessmentUnavailable
+from app.services.transcription import audio_transcript, InvalidAudio
+
 router = APIRouter()
-
-Allowed = {
-    "audio/mpeg",
-    "audio/m4a",
-    "audio/mp4",
-    "audio/wav",
-    "audio/x-wav",
-    "audio/webm",
-    "audio/ogg",
-    "audio/flac",
-}
-SUPPORTED_AUDIO_FORMATS = ("MP3", "M4A", "MP4", "WAV", "WebM", "OGG", "FLAC")
-
+# Serialize model inference per worker; reject excess work instead of accumulating uploads.
+audio_slot = threading.BoundedSemaphore(1)
+Allowed = {"audio/mpeg", "audio/m4a", "audio/mp4", "audio/wav", "audio/x-wav",
+           "audio/webm", "audio/ogg", "audio/flac"}
 UNSUPPORTED_AUDIO_ERROR = (
-    "Unsupported audio content type. "
-    f"Accepted formats: {', '.join(SUPPORTED_AUDIO_FORMATS)}."
+    "Unsupported audio content type. Accepted formats: MP3, M4A, MP4, WAV, WebM, OGG, FLAC."
 )
+
+
+def assess(text: str) -> riskAssessment:
+    try:
+        return get_assessment(text)
+    except AssessmentUnavailable as exc:
+        raise HTTPException(502, "Assessment temporarily unavailable") from exc
+
 
 @router.post(
-    "/email",
-    summary="Analyze email content for scam risk",
-    description=(
-        "Analyze the submitted email body and return a scam risk assessment. "
-        "Requests are rate-limited per client."
-    ),
-    responses={
-        429: {"description": "Rate limit exceeded."},
-    },
+    "/text", summary="Analyze text for scam risk", dependencies=[Depends(authorize)],
+    responses={401: {"description": "Authentication required"},
+               429: {"description": "Rate limit exceeded"}, 502: {"description": "Provider unavailable"}},
 )
-def email_check(item: information, request: Request)-> riskAssessment | dict | None:
-    assert request.client is not None
-    if not rate_limit.check_rate_limit(request.client.host):
-        raise HTTPException (status_code= 429, detail= {"error":"Reached your limit, wait 60 seconds before requesting again"})
-    return get_assessment(item.body)
+def text_check(item: TextRequest) -> riskAssessment:
+    return assess(item.body)
+
 
 @router.post(
-    "/audio",
-    summary="Analyze an audio file for scam risk",
-    description=(
-        "Upload a supported audio file for transcription and scam risk analysis. "
-        "The endpoint enforces the configured maximum file size and validates "
-        "the detected audio format."
-    ),
-    responses={
-        413: {"description": "Uploaded audio exceeds the configured size limit."},
-        415: {"description": "Uploaded content is not a supported audio format."},
-        429: {"description": "Rate limit exceeded."},
-    },
+    "/email", summary="Analyze email content for scam risk", deprecated=True,
+    dependencies=[Depends(authorize)],
+    responses={429: {"description": "Rate limit exceeded"}},
 )
-def audio_check(file:UploadFile, request: Request)-> riskAssessment | dict | None:
+def email_check(item: information) -> riskAssessment:
+    return assess(item.body)
 
 
-    assert request.client is not None
-    if not rate_limit.check_rate_limit(request.client.host):
-        raise HTTPException (status_code= 429, detail= {"error":"Reached your limit, wait 60 seconds before requesting again"})
-    byte =  file.file.read()
-    if len(byte) > MAX_FILE_SIZE:
-        raise HTTPException(status_code=413, detail={"error": f"File too large. Max size is {MAX_FILE_SIZE // (1024 * 1024)}MB."})
-    kind = filetype.guess(byte)
-
+def analyze_audio(data: bytes) -> riskAssessment:
+    if len(data) > MAX_FILE_SIZE:
+        raise HTTPException(413, {"error": f"File too large. Max size is {MAX_FILE_SIZE // (1024 * 1024)}MB."})
+    kind = filetype.guess(data)
     if kind is None or kind.mime not in Allowed:
-        raise HTTPException (status_code= 415, detail= {"error": UNSUPPORTED_AUDIO_ERROR})
-    tmp_dir = "/dev/shm/" if os.path.exists("/dev/shm") else ""
-    filename = f"{tmp_dir}audio{uuid.uuid4()}.{kind.extension}"
-    with open(filename, "wb") as f:
-        f.write(byte)
-    transcript = audio_transcript(filename)
-    os.remove(filename)
-    return get_assessment(transcript)
+        raise HTTPException(415, {"error": UNSUPPORTED_AUDIO_ERROR})
+    if not audio_slot.acquire(blocking=False):
+        raise HTTPException(503, "Audio processor busy", headers={"Retry-After": "5"})
+    try:
+        with tempfile.TemporaryDirectory(prefix="scamshield-upload-") as directory:
+            filename = os.path.join(directory, f"audio.{kind.extension}")
+            with open(filename, "wb") as audio:
+                audio.write(data)
+            try:
+                transcript = audio_transcript(filename)
+            except InvalidAudio as exc:
+                raise HTTPException(422, str(exc)) from exc
+            return assess(transcript)
+    finally:
+        audio_slot.release()
+
+
+@router.post(
+    "/audio", summary="Analyze an audio file for scam risk", dependencies=[Depends(authorize)],
+    responses={413: {"description": "Upload too large"}, 415: {"description": "Unsupported audio"},
+               429: {"description": "Rate limit exceeded"}, 503: {"description": "Audio processor busy"}},
+)
+def audio_check(file: UploadFile) -> riskAssessment:
+    return analyze_audio(file.file.read(MAX_FILE_SIZE + 1))
+
 
 @router.websocket("/ws")
-async def websocket_endpoint(websocket: WebSocket)-> riskAssessment | str | None:
-    """Analyze streaming audio over a WebSocket connection.
+async def websocket_endpoint(websocket: WebSocket):
+    """Analyze complete audio clips over an authenticated WebSocket connection.
 
-    The client sends audio bytes. Supported audio is transcribed and analyzed,
-    while oversized or unsupported payloads receive an error response.
+    Each binary message is one independently decodable clip, not a partial stream.
     """
+    identity = authorize_websocket(websocket)
+    origin = websocket.headers.get("origin")
+    if origin and origin not in CORS_ORIGINS:
+        await websocket.close(code=1008, reason="Origin not allowed")
+        return
     await websocket.accept()
-
     try:
         while True:
-
-            byte = await websocket.receive_bytes()
-
-            assert websocket.client is not None
-            if not rate_limit.check_rate_limit(websocket.client.host):
-                raise WebSocketException(code = 1008, reason="Reached your limit, wait 60 seconds before requesting again")
-            if len(byte) > MAX_FILE_SIZE:
-                await websocket.send_json({"error": f"File too large. Max size is {MAX_FILE_SIZE // (1024 * 1024)}MB."})
-                continue
-            kind = filetype.guess(byte) 
-
-            if kind is None or kind.mime not in Allowed:
-                await websocket.send_json({"error": UNSUPPORTED_AUDIO_ERROR})
-                continue
-            tmp_dir = "/dev/shm/" if os.path.exists("/dev/shm") else ""
-            filename = f"{tmp_dir}audio{uuid.uuid4()}.{kind.extension}"
-            with open(filename, "wb") as f:
-                f.write(byte)
-            transcript = await asyncio.to_thread(audio_transcript,filename)
-            os.remove(filename)
-            assessment =  await asyncio.to_thread(get_assessment,transcript)
-            if assessment is None: 
-                await websocket.send_json({"error": "Failed to analyze the audio. Try again"})
-            else:
-                await websocket.send_json(assessment.model_dump())
+            try:
+                data = await asyncio.wait_for(websocket.receive_bytes(), timeout=60)
+                await asyncio.to_thread(enforce_limit, identity)
+                result = await asyncio.to_thread(analyze_audio, data)
+                await websocket.send_json(result.model_dump())
+            except HTTPException as exc:
+                error = exc.detail if isinstance(exc.detail, dict) else {"error": exc.detail}
+                await websocket.send_json(error)
+                if exc.status_code in (429, 503):
+                    await websocket.close(code=1013)
+                    return
+            except asyncio.TimeoutError:
+                await websocket.close(code=1000, reason="Idle timeout")
+                return
+            except KeyError:
+                await websocket.close(code=1003, reason="Send binary audio messages")
+                return
     except WebSocketDisconnect:
-        print("Client disconnected")
+        return
