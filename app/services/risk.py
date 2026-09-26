@@ -1,21 +1,23 @@
+import json
 
+from openai import OpenAIError
 from pydantic import ValidationError
 
 from app.models.response import riskAssessment
 from app.services.ai import ask_deepseek
 
 
-def get_assessment(transcription: str) -> riskAssessment | None:
-    for _ in range(5):
-        response = ask_deepseek(transcription)
+class AssessmentUnavailable(RuntimeError):
+    """The upstream assessment service could not complete the request."""
 
-        if response is None:
-            continue
 
+def get_assessment(transcription: str) -> riskAssessment:
+    for _ in range(2):
         try:
-            return riskAssessment(**response)
-
-        except ValidationError as e:
-            print(e.errors())
-
-    return None
+            response = ask_deepseek(transcription)
+            return riskAssessment.model_validate(response)
+        except (ValidationError, json.JSONDecodeError):
+            continue
+        except OpenAIError as exc:
+            raise AssessmentUnavailable("Assessment provider unavailable") from exc
+    raise AssessmentUnavailable("Assessment provider returned an invalid response")

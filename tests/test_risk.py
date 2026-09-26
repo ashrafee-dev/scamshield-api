@@ -1,9 +1,7 @@
-import os
 from unittest.mock import patch
+import pytest
 
-os.environ.setdefault("DEEPSEEK_API_KEY", "test-key")
-
-from app.services.risk import get_assessment  # pylint: disable=wrong-import-position
+from app.services.risk import get_assessment, AssessmentUnavailable
 
 
 VALID_RESPONSE = {
@@ -33,12 +31,12 @@ def test_get_assessment_retries_after_invalid_response():
     assert mock_ask.call_count == 2
 
 
-def test_get_assessment_returns_none_after_all_attempts_fail():
+def test_get_assessment_raises_after_bounded_attempts_fail():
     with patch(
         "app.services.risk.ask_deepseek",
         return_value=INVALID_RESPONSE,
     ) as mock_ask:
-        result = get_assessment("test transcription")
+        with pytest.raises(AssessmentUnavailable):
+            get_assessment("test transcription")
 
-    assert result is None
-    assert mock_ask.call_count == 5
+    assert mock_ask.call_count == 2
