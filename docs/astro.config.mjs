@@ -11,7 +11,7 @@ export default defineConfig({
         {
           icon: 'github',
           label: 'GitHub',
-          href: 'https://github.com/<your-github-username>/<your-repo>',
+            href: 'https://github.com/ashrafee-dev/scamshield-api',
         },
       ],
 
@@ -23,6 +23,8 @@ export default defineConfig({
               label: 'Quick Start',
               slug: 'guides/quickstart',
             },
+            { label: 'Deployment', slug: 'guides/deployment' },
+            { label: 'Privacy and clients', slug: 'guides/privacy' },
           ],
         },
         {

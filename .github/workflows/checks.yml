@@ -1,0 +1,50 @@
+name: Checks
+on: [push, pull_request]
+permissions:
+  contents: read
+jobs:
+  python:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          python-version: "3.13"
+          version: "0.12.19"
+      - run: uv sync --frozen --dev
+      - run: bash scripts/check.sh
+  docs:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: docs
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: docs/package-lock.json
+      - run: npm ci
+      - run: npm run build
+  container:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: docker build -t scamshield:test .
+      - name: Check container startup with Redis
+        run: |
+          cp example.env .env
+          echo 'SCAMSHIELD_API_KEYS=ci-only-token-00000000000000000000000000000000' >> .env
+          docker network create smoke
+          docker run -d --name redis --network smoke redis:7.4-alpine
+          docker run -d --name api --network smoke -p 127.0.0.1:8000:8000 \
+            --env-file .env -e REDIS_URL=redis://redis:6379/0 scamshield:test
+          for attempt in $(seq 1 30); do
+            if curl -fsS http://127.0.0.1:8000/ready; then break; fi
+            sleep 2
+          done
+          curl -fsS http://127.0.0.1:8000/ready
+          docker exec -i api python < scripts/smoke.py
+      - if: failure()
+        run: docker logs api

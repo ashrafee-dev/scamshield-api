@@ -216,3 +216,8 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Astro documentation build outputs
+docs/node_modules/
+docs/.astro/
+docs/dist/
