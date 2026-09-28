@@ -1,0 +1,22 @@
+name: Improvement proposal
+description: Explain a user problem before choosing an implementation.
+labels: [enhancement]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Who benefits and what is missing?
+    validations:
+      required: true
+  - type: textarea
+    id: outcome
+    attributes:
+      label: Proposed outcome and acceptance criteria
+      description: Mention existing related issues and compatibility implications.
+    validations:
+      required: true
+  - type: textarea
+    id: boundaries
+    attributes:
+      label: Scope, non-goals, and dependencies
+      description: Identify any architecture or security decisions needed first.

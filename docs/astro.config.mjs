@@ -17,6 +17,10 @@ export default defineConfig({
 
       sidebar: [
         {
+          label: 'Contribute',
+          items: [{ label: 'Start here', slug: 'contributing' }],
+        },
+        {
           label: 'Guides',
           items: [
             {

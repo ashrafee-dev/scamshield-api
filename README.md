@@ -71,6 +71,7 @@ Contributions are welcome.
 - NOAI contributions are preferred.
 
 
-- For First Time Contribution 
-    - Look for issues labeled **`first-time-contribution`**. I'll keep them small and beginner-friendly so anyone can make their first contribution.
+- For your first contribution, read [CONTRIBUTING.md](CONTRIBUTING.md), then choose a
+  ready [`good first issue`](https://github.com/ashrafee-dev/scamshield-api/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22+label%3A%22status%3Aready%22).
+- Browse the [contributor roadmap](contributor-roadmap/README.md) for scoped tasks and proposals.
 - Have fun!

@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Find a ready first contribution
+    url: https://github.com/ashrafee-dev/scamshield-api/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22+label%3A%22status%3Aready%22
+    about: Browse scoped beginner tasks before proposing a duplicate.
+  - name: Contributor setup and workflow
+    url: https://github.com/ashrafee-dev/scamshield-api/blob/main/CONTRIBUTING.md
+    about: Run the mocked tests without AWS or paid credentials.

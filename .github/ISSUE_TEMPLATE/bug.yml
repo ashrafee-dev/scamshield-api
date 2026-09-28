@@ -1,0 +1,23 @@
+name: Reproducible bug
+description: Report incorrect behavior with a small, non-sensitive example.
+labels: [bug]
+body:
+  - type: textarea
+    id: behavior
+    attributes:
+      label: Expected and actual behavior
+      description: Include the endpoint or command. Do not include credentials or private content.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Minimal reproduction
+      description: Use synthetic input and include the commit/version and relevant environment.
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Checks already performed
+      description: Include sanitized errors and related issue links, if available.
