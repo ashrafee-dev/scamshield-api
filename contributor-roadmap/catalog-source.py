@@ -4,7 +4,7 @@
 # acceptance criteria separated by ~ | optional existing issue number.
 # R = ready, D = design needed. 1/2/3 = beginner/intermediate/advanced.
 TRACKS = {
-"onboarding": ("Contributor experience", "CON", "CONTRIBUTING.md README.md pyproject.toml", "docs/src/content/docs/contributing", "docs", """
+"onboarding": ("Contributor experience", "CON", "README.md AGENTS.md pyproject.toml", "docs/src/content/docs/contributing", "docs", """
 R1|macos-setup|Write a clean-checkout macOS contributor walkthrough|The root guide does not walk through macOS tool installation and PATH troubleshooting|Use a fresh-directory setup with Python 3.13 and uv~Show the mocked test path without Redis or a real key~Explain resolving uv outside an interactive shell
 R1|linux-setup|Write an Ubuntu contributor setup walkthrough|There is no Ubuntu-specific test-only onboarding page|Verify uv installation and repository-root commands~Separate unit-test prerequisites from live FFmpeg and Redis setup~Record the Ubuntu version used
 R1|windows-setup|Write a Windows PowerShell contributor walkthrough|Existing commands assume a Unix shell|Provide PowerShell equivalents for environment variables and focused pytest~Document bash check-script alternatives~State which steps were verified on Windows

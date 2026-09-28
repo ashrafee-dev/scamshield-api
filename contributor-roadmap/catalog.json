@@ -12,8 +12,8 @@
       "kind": "docs",
       "evidence": "The root guide does not walk through macOS tool installation and PATH troubleshooting",
       "references": [
-        "CONTRIBUTING.md",
         "README.md",
+        "AGENTS.md",
         "pyproject.toml"
       ],
       "output": "docs/src/content/docs/contributing/macos-setup.md",
@@ -41,8 +41,8 @@
       "kind": "docs",
       "evidence": "There is no Ubuntu-specific test-only onboarding page",
       "references": [
-        "CONTRIBUTING.md",
         "README.md",
+        "AGENTS.md",
         "pyproject.toml"
       ],
       "output": "docs/src/content/docs/contributing/linux-setup.md",
@@ -70,8 +70,8 @@
       "kind": "docs",
       "evidence": "Existing commands assume a Unix shell",
       "references": [
-        "CONTRIBUTING.md",
         "README.md",
+        "AGENTS.md",
         "pyproject.toml"
       ],
       "output": "docs/src/content/docs/contributing/windows-setup.md",
@@ -99,8 +99,8 @@
       "kind": "docs",
       "evidence": "There is no guidance for contributors using WSL2",
       "references": [
-        "CONTRIBUTING.md",
         "README.md",
+        "AGENTS.md",
         "pyproject.toml"
       ],
       "output": "docs/src/content/docs/contributing/wsl-setup.md",
@@ -128,8 +128,8 @@
       "kind": "docs",
       "evidence": "The guide lists steps but does not demonstrate a fork-to-review workflow",
       "references": [
-        "CONTRIBUTING.md",
         "README.md",
+        "AGENTS.md",
         "pyproject.toml"
       ],
       "output": "docs/src/content/docs/contributing/first-pr-walkthrough.md",
@@ -157,8 +157,8 @@
       "kind": "docs",
       "evidence": "New contributors may rerun the whole suite for every edit",
       "references": [
-        "CONTRIBUTING.md",
         "README.md",
+        "AGENTS.md",
         "pyproject.toml"
       ],
       "output": "docs/src/content/docs/contributing/focused-pytest.md",
@@ -186,8 +186,8 @@
       "kind": "docs",
       "evidence": "The check output gives codes without contributor-oriented explanations",
       "references": [
-        "CONTRIBUTING.md",
         "README.md",
+        "AGENTS.md",
         "pyproject.toml"
       ],
       "output": "docs/src/content/docs/contributing/pylint-help.md",
@@ -215,8 +215,8 @@
       "kind": "docs",
       "evidence": "The default client silently includes a fake bearer token",
       "references": [
-        "CONTRIBUTING.md",
         "README.md",
+        "AGENTS.md",
         "pyproject.toml"
       ],
       "output": "docs/src/content/docs/contributing/fixture-guide.md",
@@ -244,8 +244,8 @@
       "kind": "docs",
       "evidence": "Route imports require patching their local bindings",
       "references": [
-        "CONTRIBUTING.md",
         "README.md",
+        "AGENTS.md",
         "pyproject.toml"
       ],
       "output": "docs/src/content/docs/contributing/mock-targets.md",
@@ -273,8 +273,8 @@
       "kind": "docs",
       "evidence": "Stacked branches previously caused deployment work to miss main",
       "references": [
-        "CONTRIBUTING.md",
         "README.md",
+        "AGENTS.md",
         "pyproject.toml"
       ],
       "output": "docs/src/content/docs/contributing/git-conflicts.md",
@@ -302,8 +302,8 @@
       "kind": "docs",
       "evidence": "There is no review-iteration walkthrough",
       "references": [
-        "CONTRIBUTING.md",
         "README.md",
+        "AGENTS.md",
         "pyproject.toml"
       ],
       "output": "docs/src/content/docs/contributing/review-feedback.md",
@@ -331,8 +331,8 @@
       "kind": "docs",
       "evidence": "Bug reports need useful evidence without private scam messages",
       "references": [
-        "CONTRIBUTING.md",
         "README.md",
+        "AGENTS.md",
         "pyproject.toml"
       ],
       "output": "docs/src/content/docs/contributing/issue-reproduction.md",
@@ -360,8 +360,8 @@
       "kind": "docs",
       "evidence": "The docs package is separate from the Python API",
       "references": [
-        "CONTRIBUTING.md",
         "README.md",
+        "AGENTS.md",
         "pyproject.toml"
       ],
       "output": "docs/src/content/docs/contributing/docs-navigation.md",
@@ -389,8 +389,8 @@
       "kind": "docs",
       "evidence": "Python and npm have independent lockfiles",
       "references": [
-        "CONTRIBUTING.md",
         "README.md",
+        "AGENTS.md",
         "pyproject.toml"
       ],
       "output": "docs/src/content/docs/contributing/dependency-changes.md",
@@ -418,8 +418,8 @@
       "kind": "docs",
       "evidence": "Whisper stubbing can make contributors mistake unit tests for decoder integration",
       "references": [
-        "CONTRIBUTING.md",
         "README.md",
+        "AGENTS.md",
         "pyproject.toml"
       ],
       "output": "docs/src/content/docs/contributing/audio-test-prereqs.md",
@@ -447,8 +447,8 @@
       "kind": "docs",
       "evidence": "The repository has an audio fixture but no provenance checklist",
       "references": [
-        "CONTRIBUTING.md",
         "README.md",
+        "AGENTS.md",
         "pyproject.toml"
       ],
       "output": "docs/src/content/docs/contributing/test-data-policy.md",
@@ -476,8 +476,8 @@
       "kind": "docs",
       "evidence": "No repo-specific debugger instructions exist",
       "references": [
-        "CONTRIBUTING.md",
         "README.md",
+        "AGENTS.md",
         "pyproject.toml"
       ],
       "output": "docs/src/content/docs/contributing/debugger-guide.md",
@@ -505,8 +505,8 @@
       "kind": "docs",
       "evidence": "The roadmap includes shared-file and isolated-file work",
       "references": [
-        "CONTRIBUTING.md",
         "README.md",
+        "AGENTS.md",
         "pyproject.toml"
       ],
       "output": "docs/src/content/docs/contributing/minimal-pr-checklist.md",
@@ -534,8 +534,8 @@
       "kind": "docs",
       "evidence": "Tests avoid external services but package installation needs downloads",
       "references": [
-        "CONTRIBUTING.md",
         "README.md",
+        "AGENTS.md",
         "pyproject.toml"
       ],
       "output": "docs/src/content/docs/contributing/offline-work.md",
@@ -563,8 +563,8 @@
       "kind": "docs",
       "evidence": "Beginners encounter ASGI, fixtures, CORS, and upstream without definitions",
       "references": [
-        "CONTRIBUTING.md",
         "README.md",
+        "AGENTS.md",
         "pyproject.toml"
       ],
       "output": "docs/src/content/docs/contributing/contributor-glossary.md",

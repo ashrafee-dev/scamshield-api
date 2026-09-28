@@ -40,6 +40,8 @@ after discussion or a merged PR. Check the live GitHub labels before starting.
 
 ## Maintainer rules
 
+See the [maintainer playbook](MAINTAINERS.md) for triage, review, and dependency handling.
+
 1. Reproduce or verify the gap on `main` before labelling work ready.
 2. Check existing issues and PRs. Reuse a relevant issue rather than splitting its
    acceptance criteria across competing tickets.

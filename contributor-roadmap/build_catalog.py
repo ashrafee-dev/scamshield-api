@@ -24,6 +24,7 @@ DEPENDENCIES = {
 }
 
 entries = []
+verified_paths = set()
 for area, (name, prefix, references, directory, kind, raw) in briefs.TRACKS.items():
     rows = [line.split("|") for line in raw.strip().splitlines()]
     if len(rows) != 20:
@@ -37,8 +38,15 @@ for area, (name, prefix, references, directory, kind, raw) in briefs.TRACKS.item
         status = {"R": "ready", "D": "design-needed"}[code[0]]
         refs = references.split()
         for path in refs:
-            if not (ROOT / path).is_file():
-                raise ValueError(f"Missing source reference {path}")
+            if path in verified_paths:
+                continue
+            exists = subprocess.run(
+                ["git", "cat-file", "-e", f"{snapshot}:{path}"],
+                cwd=ROOT, capture_output=True, check=False,
+            )
+            if exists.returncode:
+                raise ValueError(f"Source reference {path} does not exist at audited revision {snapshot}")
+            verified_paths.add(path)
         if kind == "pytest":
             output = f"{directory}/test_{slug.replace('-', '_')}.py"
             commands = [f"uv run pytest {output} -q", "uv run pylint app tests"]
