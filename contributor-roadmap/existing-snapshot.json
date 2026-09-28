@@ -1,0 +1,568 @@
+[
+  {
+    "assignees": [],
+    "body": "## Problem\n`scripts/check.sh` does not enable fail-fast behavior. If tests fail but Pylint succeeds, the script can finish successfully and hide the failed test run.\n\n## Acceptance criteria\n- Ensure a failed test or lint command produces a non-zero script exit status.\n- Preserve the current test-then-lint order.\n- Add a small shell-level verification or document how the behavior was checked.",
+    "labels": [
+      {
+        "id": "LA_kwDOTX9sW88AAAACroaaLQ",
+        "name": "good first issue",
+        "description": "Good for newcomers",
+        "color": "7057ff"
+      }
+    ],
+    "number": 73,
+    "title": "Make scripts/check.sh fail on test errors"
+  },
+  {
+    "assignees": [],
+    "body": "## Problem\nUnexpected exceptions from Redis, audio processing, or upstream services can currently produce inconsistent responses.\n\n## Acceptance criteria\n- Add controlled handlers for unexpected HTTP-path failures.\n- Return a stable, secret-safe error format.\n- Log diagnostic details server-side without returning stack traces to clients.",
+    "labels": [
+      {
+        "id": "LA_kwDOTX9sW88AAAACroaaLQ",
+        "name": "good first issue",
+        "description": "Good for newcomers",
+        "color": "7057ff"
+      }
+    ],
+    "number": 72,
+    "title": "Add global API exception handlers"
+  },
+  {
+    "assignees": [],
+    "body": "## Goal\nDistinguish a running process from an API instance that can actually analyze requests.\n\n## Acceptance criteria\n- Add a readiness endpoint or documented readiness behavior separate from the liveness check.\n- Define how Redis, the API key, and audio dependencies are handled.\n- Avoid making expensive DeepSeek or Whisper calls on every probe.",
+    "labels": [
+      {
+        "id": "LA_kwDOTX9sW88AAAACroaaLQ",
+        "name": "good first issue",
+        "description": "Good for newcomers",
+        "color": "7057ff"
+      }
+    ],
+    "number": 71,
+    "title": "Add a readiness check for external services"
+  },
+  {
+    "assignees": [],
+    "body": "## Problem\nThe email request model collects `sender`, but `/email` currently sends only `body` to the assessment service.\n\n## Acceptance criteria\n- Decide whether sender information should contribute to analysis.\n- If it should, pass it through using the existing privacy filtering path.\n- Add a test proving the selected behavior and update the API documentation.",
+    "labels": [
+      {
+        "id": "LA_kwDOTX9sW88AAAACroaaLQ",
+        "name": "good first issue",
+        "description": "Good for newcomers",
+        "color": "7057ff"
+      }
+    ],
+    "number": 70,
+    "title": "Use the email sender in scam analysis"
+  },
+  {
+    "assignees": [],
+    "body": "## Goal\nProtect the privacy filter with regression tests before changing its patterns.\n\n## Acceptance criteria\n- Cover email addresses, phone numbers, card-like numbers, SSNs, and long numeric IDs.\n- Confirm replacements remove the original sensitive values.\n- Include at least one mixed-content example.",
+    "labels": [
+      {
+        "id": "LA_kwDOTX9sW88AAAACroaaLQ",
+        "name": "good first issue",
+        "description": "Good for newcomers",
+        "color": "7057ff"
+      }
+    ],
+    "number": 69,
+    "title": "Add tests for sensitive-data filtering"
+  },
+  {
+    "assignees": [],
+    "body": "## Problem\nRate limiting uses `request.client.host` directly. Behind a reverse proxy this may rate-limit the proxy itself, while trusting forwarded headers without configuration could allow spoofing.\n\n## Acceptance criteria\n- Decide and document the supported deployment behavior.\n- If proxy headers are supported, configure trusted proxies explicitly.\n- Add tests for the selected client-IP behavior.",
+    "labels": [
+      {
+        "id": "LA_kwDOTX9sW88AAAACroaaLQ",
+        "name": "good first issue",
+        "description": "Good for newcomers",
+        "color": "7057ff"
+      }
+    ],
+    "number": 68,
+    "title": "Document proxy-aware client IP handling"
+  },
+  {
+    "assignees": [],
+    "body": "## Problem\nThe DeepSeek client call has no explicit timeout, so an upstream network problem can hold an API request indefinitely.\n\n## Acceptance criteria\n- Configure a finite timeout for model requests.\n- Make the value configurable if appropriate.\n- Add a test that confirms timeout failures become a controlled API error.",
+    "labels": [
+      {
+        "id": "LA_kwDOTX9sW88AAAACroaaLQ",
+        "name": "good first issue",
+        "description": "Good for newcomers",
+        "color": "7057ff"
+      }
+    ],
+    "number": 66,
+    "title": "Add timeouts to DeepSeek requests"
+  },
+  {
+    "assignees": [],
+    "body": "## Problem\nThe application can start with no `DEEPSEEK_API_KEY`, then fail later during an analysis request with an unclear upstream error.\n\n## Acceptance criteria\n- Validate the required key during startup or configuration loading.\n- Provide a clear, secret-safe error message.\n- Add a test for missing configuration without making a real API call.",
+    "labels": [
+      {
+        "id": "LA_kwDOTX9sW88AAAACroaaLQ",
+        "name": "good first issue",
+        "description": "Good for newcomers",
+        "color": "7057ff"
+      }
+    ],
+    "number": 64,
+    "title": "Fail clearly when DEEPSEEK_API_KEY is missing"
+  },
+  {
+    "assignees": [],
+    "body": "## Problem\nThe `/email` endpoint accepts unbounded sender and body strings, which can cause unnecessary memory use and expensive upstream requests.\n\n## Acceptance criteria\n- Define reasonable maximum lengths for `sender` and `body`.\n- Return a clear validation response when limits are exceeded.\n- Document the limits and add focused tests.",
+    "labels": [
+      {
+        "id": "LA_kwDOTX9sW88AAAACroaaLQ",
+        "name": "good first issue",
+        "description": "Good for newcomers",
+        "color": "7057ff"
+      }
+    ],
+    "number": 63,
+    "title": "Add email input length limits"
+  },
+  {
+    "assignees": [],
+    "body": "## Problem\nThe `riskAssessment` model accepts any integer for `certainty`, even though the API contract and model prompt require a value from 0 to 100.\n\n## Acceptance criteria\n- Enforce an inclusive 0\u2013100 range in the Pydantic response model.\n- Add tests for the lower bound, upper bound, and invalid values.\n- Keep valid existing responses unchanged.",
+    "labels": [
+      {
+        "id": "LA_kwDOTX9sW88AAAACroaaLQ",
+        "name": "good first issue",
+        "description": "Good for newcomers",
+        "color": "7057ff"
+      }
+    ],
+    "number": 62,
+    "title": "Constrain risk-assessment certainty"
+  },
+  {
+    "assignees": [],
+    "body": "## Goal\nMake CI provide feedback before changes are merged.\n\n## Acceptance criteria\n- Trigger the workflow for both pushes and pull requests.\n- Keep the existing Python 3.13 and `uv sync --dev` setup.\n- Run the repository\u2019s test and lint checks, or clearly explain why a check is separate.",
+    "labels": [
+      {
+        "id": "LA_kwDOTX9sW88AAAACroaaLQ",
+        "name": "good first issue",
+        "description": "Good for newcomers",
+        "color": "7057ff"
+      }
+    ],
+    "number": 61,
+    "title": "Run tests and lint on pull requests"
+  },
+  {
+    "assignees": [],
+    "body": "## Problem\nInvalid JSON or an upstream DeepSeek failure can currently propagate as an unhandled exception.\n\n## Acceptance criteria\n- Handle JSON parsing failures and relevant client errors.\n- Return a controlled API error for HTTP requests and a controlled message for WebSockets.\n- Add tests for malformed model output and an upstream failure.",
+    "labels": [
+      {
+        "id": "LA_kwDOTX9sW88AAAACroaaLQ",
+        "name": "good first issue",
+        "description": "Good for newcomers",
+        "color": "7057ff"
+      }
+    ],
+    "number": 60,
+    "title": "Handle malformed DeepSeek responses gracefully"
+  },
+  {
+    "assignees": [],
+    "body": "## Problem\nThe AI response is parsed as a generic dictionary even though the API promises a `riskAssessment` shape.\n\n## Acceptance criteria\n- Validate the returned data with the existing Pydantic model.\n- Reject invalid labels, scores, certainty values, or missing fields.\n- Preserve the documented response format.",
+    "labels": [
+      {
+        "id": "LA_kwDOTX9sW88AAAACroaaLQ",
+        "name": "good first issue",
+        "description": "Good for newcomers",
+        "color": "7057ff"
+      }
+    ],
+    "number": 59,
+    "title": "Validate DeepSeek responses with riskAssessment"
+  },
+  {
+    "assignees": [],
+    "body": "## Goal\nKeep the supported audio MIME-type list in one reusable location.\n\n## Acceptance criteria\n- Move the list out of the route function/module if appropriate.\n- Reuse it for both `/audio` and `/ws`.\n- Add a small test or documented constant to prevent accidental divergence.",
+    "labels": [
+      {
+        "id": "LA_kwDOTX9sW88AAAACroaaLQ",
+        "name": "good first issue",
+        "description": "Good for newcomers",
+        "color": "7057ff"
+      }
+    ],
+    "number": 57,
+    "title": "Centralize supported audio MIME types"
+  },
+  {
+    "assignees": [],
+    "body": "## Problem\n`MAX_FILE_SIZE` is parsed directly with `int()`, so invalid, zero, or negative values produce confusing startup or runtime behavior.\n\n## Acceptance criteria\n- Reject non-integer values with a clear configuration error.\n- Reject zero and negative values.\n- Add focused tests for valid and invalid configuration values.",
+    "labels": [
+      {
+        "id": "LA_kwDOTX9sW88AAAACroaaLQ",
+        "name": "good first issue",
+        "description": "Good for newcomers",
+        "color": "7057ff"
+      }
+    ],
+    "number": 56,
+    "title": "Validate MAX_FILE_SIZE configuration"
+  },
+  {
+    "assignees": [],
+    "body": "## Goal\nUse Python logging instead of direct `print()` calls in runtime code.\n\n## Acceptance criteria\n- Replace the rate-limit timestamp print.\n- Replace the WebSocket disconnect print.\n- Use useful log levels and messages without logging secrets or message contents.",
+    "labels": [
+      {
+        "id": "LA_kwDOTX9sW88AAAACroaaLQ",
+        "name": "good first issue",
+        "description": "Good for newcomers",
+        "color": "7057ff"
+      }
+    ],
+    "number": 55,
+    "title": "Replace print statements with logging"
+  },
+  {
+    "assignees": [],
+    "body": "## Goal\nRemove duplicated temporary-file creation and cleanup logic from the HTTP and WebSocket paths.\n\n## Acceptance criteria\n- Introduce a small helper only where it genuinely reduces duplication.\n- Preserve the existing `/dev/shm` behavior and extension handling.\n- Keep cleanup guarantees clear and testable.",
+    "labels": [
+      {
+        "id": "LA_kwDOTX9sW88AAAACroaaLQ",
+        "name": "good first issue",
+        "description": "Good for newcomers",
+        "color": "7057ff"
+      }
+    ],
+    "number": 54,
+    "title": "Share temporary audio-file handling"
+  },
+  {
+    "assignees": [],
+    "body": "## Problem\nTemporary files created by `/audio` and `/ws` may remain on disk if transcription or assessment raises an exception.\n\n## Acceptance criteria\n- Use `try/finally` or an equivalent cleanup mechanism.\n- Ensure cleanup occurs for successful and failed processing.\n- Add a focused test or testable helper for the failure path.",
+    "labels": [
+      {
+        "id": "LA_kwDOTX9sW88AAAACroaaLQ",
+        "name": "good first issue",
+        "description": "Good for newcomers",
+        "color": "7057ff"
+      }
+    ],
+    "number": 53,
+    "title": "Always clean up temporary audio files"
+  },
+  {
+    "assignees": [],
+    "body": "## Goal\nCreate focused tests for the rate limiter\u2019s important state transitions.\n\n## Acceptance criteria\n- Cover the first request for an IP.\n- Cover requests after the limit is exhausted.\n- Cover reset after the configured time window.\n- Avoid depending on a developer\u2019s real Redis data.",
+    "labels": [
+      {
+        "id": "LA_kwDOTX9sW88AAAACroaaLQ",
+        "name": "good first issue",
+        "description": "Good for newcomers",
+        "color": "7057ff"
+      }
+    ],
+    "number": 52,
+    "title": "Add rate-limit behavior tests"
+  },
+  {
+    "assignees": [],
+    "body": "## Goal\nReturn a controlled service response when Redis is unavailable instead of exposing an unhandled connection exception.\n\n## Acceptance criteria\n- Catch the relevant Redis connection error at the API boundary or rate-limit service.\n- Choose and document an appropriate HTTP/WebSocket error behavior.\n- Add a test that simulates Redis being unavailable.",
+    "labels": [
+      {
+        "id": "LA_kwDOTX9sW88AAAACroaaLQ",
+        "name": "good first issue",
+        "description": "Good for newcomers",
+        "color": "7057ff"
+      }
+    ],
+    "number": 51,
+    "title": "Handle Redis connection failures gracefully"
+  },
+  {
+    "assignees": [],
+    "body": "## Problem\nThe test suite currently requires a live Redis instance because rate limiting connects directly to `localhost:6379`.\n\n## Acceptance criteria\n- Provide a deterministic fixture or mock for rate-limit behavior.\n- Keep tests isolated from a developer\u2019s existing Redis data.\n- Document how to run a real Redis-backed check when needed.",
+    "labels": [
+      {
+        "id": "LA_kwDOTX9sW88AAAACroaaLQ",
+        "name": "good first issue",
+        "description": "Good for newcomers",
+        "color": "7057ff"
+      }
+    ],
+    "number": 49,
+    "title": "Add a Redis fixture or mock for tests"
+  },
+  {
+    "assignees": [],
+    "body": "## Goal\nAvoid loading the large Whisper `turbo` model whenever an import does not need audio transcription.\n\n## Acceptance criteria\n- Move model initialization behind a lazy accessor or equivalent.\n- Preserve existing transcription behavior.\n- Ensure tests that do not exercise audio can import the app without downloading/loading Whisper.",
+    "labels": [
+      {
+        "id": "LA_kwDOTX9sW88AAAACroaaLQ",
+        "name": "good first issue",
+        "description": "Good for newcomers",
+        "color": "7057ff"
+      }
+    ],
+    "number": 47,
+    "title": "Load the Whisper model lazily"
+  },
+  {
+    "assignees": [],
+    "body": "## Problem\nAudio endpoint tests currently depend on the Whisper model and local audio tooling.\n\n## Acceptance criteria\n- Mock transcription for endpoint validation tests.\n- Keep assertions focused on HTTP/WebSocket behavior.\n- Document how to run any remaining real transcription test separately.",
+    "labels": [
+      {
+        "id": "LA_kwDOTX9sW88AAAACroaaLQ",
+        "name": "good first issue",
+        "description": "Good for newcomers",
+        "color": "7057ff"
+      }
+    ],
+    "number": 46,
+    "title": "Mock Whisper transcription in endpoint tests"
+  },
+  {
+    "assignees": [],
+    "body": "## Problem\nThe email endpoint test can call the real DeepSeek service, making tests slow, expensive, and nondeterministic.\n\n## Acceptance criteria\n- Mock the AI client or assessment boundary in tests.\n- Return a deterministic valid risk assessment.\n- Keep at least one small integration path available if appropriate, but do not require network access for the normal test suite.",
+    "labels": [
+      {
+        "id": "LA_kwDOTX9sW88AAAACroaaLQ",
+        "name": "good first issue",
+        "description": "Good for newcomers",
+        "color": "7057ff"
+      }
+    ],
+    "number": 45,
+    "title": "Mock DeepSeek calls in endpoint tests"
+  },
+  {
+    "assignees": [],
+    "body": "## Goal\nExpand WebSocket coverage for invalid audio messages.\n\n## Acceptance criteria\n- Test an oversized binary message.\n- Test an unsupported or unrecognizable binary payload.\n- Assert the documented JSON error responses.\n- Ensure the connection can continue after recoverable validation errors.",
+    "labels": [
+      {
+        "id": "LA_kwDOTX9sW88AAAACroaaLQ",
+        "name": "good first issue",
+        "description": "Good for newcomers",
+        "color": "7057ff"
+      }
+    ],
+    "number": 44,
+    "title": "Add WebSocket validation tests"
+  },
+  {
+    "assignees": [],
+    "body": "## Goal\nCover the content-type validation performed by `/audio`.\n\n## Acceptance criteria\n- Send bytes that are not one of the supported audio formats.\n- Assert HTTP 415.\n- Assert the response explains that the content type is not allowed.\n- Keep the test independent of transcription.",
+    "labels": [
+      {
+        "id": "LA_kwDOTX9sW88AAAACroaaLQ",
+        "name": "good first issue",
+        "description": "Good for newcomers",
+        "color": "7057ff"
+      }
+    ],
+    "number": 43,
+    "title": "Add tests for unsupported audio formats"
+  },
+  {
+    "assignees": [],
+    "body": "## Goal\nProtect the audio upload size limit with automated tests.\n\n## Acceptance criteria\n- Add a focused `/audio` test using a payload larger than `MAX_FILE_SIZE`.\n- Assert HTTP 413 and the documented error shape.\n- Avoid relying on Whisper or DeepSeek for this validation path.",
+    "labels": [
+      {
+        "id": "LA_kwDOTX9sW88AAAACroaaLQ",
+        "name": "good first issue",
+        "description": "Good for newcomers",
+        "color": "7057ff"
+      }
+    ],
+    "number": 42,
+    "title": "Add tests for oversized audio uploads"
+  },
+  {
+    "assignees": [],
+    "body": "## Goal\nAdd endpoint tests for malformed `/email` requests.\n\n## Acceptance criteria\n- Cover a missing `sender`.\n- Cover a missing `body`.\n- Cover incorrect JSON field types.\n- Assert the expected HTTP 422 responses.",
+    "labels": [
+      {
+        "id": "LA_kwDOTX9sW88AAAACroaaLQ",
+        "name": "good first issue",
+        "description": "Good for newcomers",
+        "color": "7057ff"
+      }
+    ],
+    "number": 41,
+    "title": "Add validation tests for invalid email payloads"
+  },
+  {
+    "assignees": [],
+    "body": "## Goal\nCreate a short contributor-oriented setup section covering the prerequisites that are easy to miss.\n\n## Acceptance criteria\n- Explain Python 3.13 and `uv` setup.\n- Explain that Redis must run on `localhost:6379`.\n- Mention the Whisper model and FFmpeg requirements for audio work.\n- Include the test and lint commands.",
+    "labels": [
+      {
+        "id": "LA_kwDOTX9sW88AAAACroaaLQ",
+        "name": "good first issue",
+        "description": "Good for newcomers",
+        "color": "7057ff"
+      }
+    ],
+    "number": 40,
+    "title": "Add a contributor setup guide"
+  },
+  {
+    "assignees": [],
+    "body": "## Goal\nAdd a concise API reference to the root README for contributors and local testers.\n\n## Acceptance criteria\n- Document `/email`, `/audio`, and `/ws`.\n- Include request examples and the main response fields.\n- Mention the relevant size and rate-limit behavior without duplicating a full tutorial.",
+    "labels": [
+      {
+        "id": "LA_kwDOTX9sW88AAAACroaaLQ",
+        "name": "good first issue",
+        "description": "Good for newcomers",
+        "color": "7057ff"
+      }
+    ],
+    "number": 39,
+    "title": "Document the API endpoints in README"
+  },
+  {
+    "assignees": [],
+    "body": "## Goal\nMake the environment template safe and clear for first-time contributors.\n\n## Acceptance criteria\n- Use conventional dotenv syntax without unnecessary spaces around `=`.\n- Explain that the placeholder must be replaced with a real DeepSeek key.\n- Do not add or commit a real secret.",
+    "labels": [
+      {
+        "id": "LA_kwDOTX9sW88AAAACroaaLQ",
+        "name": "good first issue",
+        "description": "Good for newcomers",
+        "color": "7057ff"
+      }
+    ],
+    "number": 37,
+    "title": "Improve the example.env template"
+  },
+  {
+    "assignees": [],
+    "body": "## Goal\nMake local setup easier by documenting the environment variables used by the backend.\n\n## Acceptance criteria\n- Document `DEEPSEEK_API_KEY`.\n- Document `MAX_FILE_SIZE`, including that it is measured in bytes and has a 25 MiB default.\n- Link to `example.env` from the setup instructions.",
+    "labels": [
+      {
+        "id": "LA_kwDOTX9sW88AAAACroaaLQ",
+        "name": "good first issue",
+        "description": "Good for newcomers",
+        "color": "7057ff"
+      }
+    ],
+    "number": 36,
+    "title": "Document backend environment variables"
+  },
+  {
+    "assignees": [],
+    "body": "## Problem\nThe docs quickstart sends only `body`, but the `information` request model currently requires both `sender` and `body`.\n\n## Acceptance criteria\n- Update the curl example to include a valid sender.\n- Confirm the example matches the actual request model and endpoint behavior.\n- Check for the same mismatch in nearby documentation.",
+    "labels": [
+      {
+        "id": "LA_kwDOTX9sW88AAAACroaaLQ",
+        "name": "good first issue",
+        "description": "Good for newcomers",
+        "color": "7057ff"
+      }
+    ],
+    "number": 35,
+    "title": "Fix the email quickstart example"
+  },
+  {
+    "assignees": [],
+    "body": "## Goal\nAdd focused tests for the proposed `GET /health` endpoint.\n\n## Acceptance criteria\n- Verify the endpoint returns HTTP 200.\n- Verify the response contains the documented status field.\n- Keep the test independent of Redis, DeepSeek, and Whisper.",
+    "labels": [
+      {
+        "id": "LA_kwDOTX9sW88AAAACroaaLQ",
+        "name": "good first issue",
+        "description": "Good for newcomers",
+        "color": "7057ff"
+      }
+    ],
+    "number": 34,
+    "title": "Add tests for the health check endpoint"
+  },
+  {
+    "assignees": [
+      {
+        "id": "MDQ6VXNlcjU3NDIzMDQz",
+        "login": "ashrafee-dev",
+        "name": "Mahdi Ashrafee",
+        "databaseId": 57423043
+      }
+    ],
+    "body": "Improve the architecture to efficiently support multiple users making requests simultaneously without degrading performance or blocking one another.\n",
+    "labels": [
+      {
+        "id": "LA_kwDOTX9sW88AAAACroaaLQ",
+        "name": "good first issue",
+        "description": "Good for newcomers",
+        "color": "7057ff"
+      }
+    ],
+    "number": 20,
+    "title": "Concurrency: Add Multi-User Processing"
+  },
+  {
+    "assignees": [],
+    "body": "The current WebSocket loop assumes every ```receive_bytes()``` call is a complete, valid audio file. In real-world streaming, you may need to handle chunked binary data.\n\n## Task\n Research and implement a basic header or framing logic if the client is intended to stream a single continuous audio feed rather than multiple small files.",
+    "labels": [
+      {
+        "id": "LA_kwDOTX9sW88AAAACroaaLQ",
+        "name": "good first issue",
+        "description": "Good for newcomers",
+        "color": "7057ff"
+      }
+    ],
+    "number": 13,
+    "title": "Refinement: WebSocket Binary Framing"
+  },
+  {
+    "assignees": [],
+    "body": "If ```get_assessment``` or ```audio_transcript``` fails or throws an unhandled error, the WebSocket connection might crash without informing the client.\n\n## Task \nAdd a global exception handler to catch unexpected errors and return a structured JSON error response to the client.",
+    "labels": [
+      {
+        "id": "LA_kwDOTX9sW88AAAACroaaLQ",
+        "name": "good first issue",
+        "description": "Good for newcomers",
+        "color": "7057ff"
+      },
+      {
+        "id": "LA_kwDOTX9sW88AAAACsd0CRQ",
+        "name": "security",
+        "description": "",
+        "color": "f57c38"
+      }
+    ],
+    "number": 12,
+    "title": "Security: Early Rate Limit Validation"
+  },
+  {
+    "assignees": [],
+    "body": "**Description**: The ```audio_transcript``` call is likely blocking the ```asyncio``` event loop. This prevents the server from handling other concurrent WebSocket connections while one is being processed.\n\n**Task**: Wrap the transcription call in ```run_in_executor```` or use an asynchronous library to ensure the API remains responsive.",
+    "labels": [
+      {
+        "id": "LA_kwDOTX9sW88AAAACsdycSw",
+        "name": "performance",
+        "description": "",
+        "color": "a3ed27"
+      }
+    ],
+    "number": 10,
+    "title": "Performance: Non-blocking Transcription"
+  },
+  {
+    "assignees": [],
+    "body": "Currently, users need to start Redis separately before running the application. Dockerizing the project would provide a consistent, one-command setup for development and deployment, making onboarding easier and improving scalability as the repository grows.",
+    "labels": [
+      {
+        "id": "LA_kwDOTX9sW88AAAACroaaLQ",
+        "name": "good first issue",
+        "description": "Good for newcomers",
+        "color": "7057ff"
+      }
+    ],
+    "number": 8,
+    "title": "Infrastructure: Dockerize the application"
+  },
+  {
+    "assignees": [],
+    "body": "# Filtering could result in False assessment \n* AI could think a template was used by a scammer seeing patterns like [EMAIL] [PHONE] , in emails or audios.",
+    "labels": [],
+    "number": 6,
+    "title": "get_assessment: Filtering may reduce assessment accuracy"
+  }
+]

@@ -13,6 +13,10 @@ jobs:
           version: "0.12.19"
       - run: uv sync --frozen --dev
       - run: bash scripts/check.sh
+      - name: Validate contributor-roadmap tooling offline
+        run: |
+          uv run python contributor-roadmap/publish.py
+          uv run pytest contributor-roadmap/test_publisher.py -q
   docs:
     runs-on: ubuntu-latest
     defaults:
