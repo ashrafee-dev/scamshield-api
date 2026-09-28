@@ -1,8 +1,8 @@
 # Contributor roadmap
 
 This is a 300-item **opportunity backlog**, not a promise to implement every proposal.
-Entries have stable IDs and are published as GitHub issues. Existing issues are reused
-where their remaining work matches; resolved requests are audited separately.
+Entries are published as GitHub issues and organized with labels and milestones.
+GitHub is the source of truth for status, scope, discussion, and ownership.
 
 ## Find work
 
@@ -12,7 +12,7 @@ where their remaining work matches; resolved requests are audited separately.
 - **difficulty:beginner** / **intermediate** / **advanced**: expected experience, not urgency.
 - **good first issue** is reserved for ready, beginner-sized, locally verifiable work.
 
-Use the generated [issue index](INDEX.md) or GitHub area labels. Start with
+Use GitHub search and the area labels below. Start with
 [CONTRIBUTING.md](../CONTRIBUTING.md). An issue's scope describes its intended changes;
 referenced files are reading material, not permission to refactor everything nearby.
 
@@ -51,33 +51,24 @@ See the [maintainer playbook](MAINTAINERS.md) for triage, review, and dependency
    be closed as not planned; it is not a pre-approved implementation specification.
 5. After a refactor, update affected paths and recheck dependencies before promoting tasks.
 6. Refresh the ready queue regularly; stale or unsupported ideas should be archived.
-7. Treat GitHub issues as the live discussion source. The catalog is the creation/audit
-   snapshot; never bulk-overwrite contributor comments or later maintainer edits.
+7. Treat GitHub issues as the only live roadmap source. Never bulk-overwrite contributor
+   comments or later maintainer edits.
 
 ## Areas
 
-The catalog spans contributor experience, text contracts, authentication/configuration,
+The roadmap spans contributor experience, text contracts, authentication/configuration,
 audio, WebSockets, privacy filtering, provider integration, quality evaluation,
 observability, client examples, documentation, testing infrastructure, architecture,
 deployment, and asynchronous jobs. Growth-oriented tracks start as design proposals;
 they are not requirements for the current synchronous API.
 
-## Publishing and audit
+## Live roadmap views
 
-`catalog.json` contains explicit scopes and acceptance criteria for all 300 entries.
-`existing-audit.json` records the reconciliation of older issues against the source
-revision. `published.json` and `INDEX.md` map stable catalog IDs to GitHub URLs.
-The publisher uses bounded sequential requests, checkpoints every write, and checks
-stable markers before creating issues. It defaults to local validation; publishing
-requires `--publish`. It does not touch the unrelated EKS learning-project prompt.
+- [All roadmap issues](https://github.com/ashrafee-dev/scamshield-api/issues?q=is%3Aissue+label%3Acontributor-roadmap)
+- [Ready work](https://github.com/ashrafee-dev/scamshield-api/issues?q=is%3Aissue+is%3Aopen+label%3Acontributor-roadmap+label%3Astatus%3Aready)
+- [Ready beginner work](https://github.com/ashrafee-dev/scamshield-api/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22+label%3Astatus%3Aready)
+- [Design discussions](https://github.com/ashrafee-dev/scamshield-api/issues?q=is%3Aissue+is%3Aopen+label%3Acontributor-roadmap+label%3Astatus%3Adesign-needed)
 
-```bash
-# Local-only validation and publisher safeguard tests:
-uv run python contributor-roadmap/publish.py
-uv run pytest contributor-roadmap/test_publisher.py -q
-```
-
-Only maintainers should publish or resume a batch. On resume, the publisher looks
-for stable markers on GitHub, including closed issues, and leaves already published
-bodies alone. Never remove those markers to force a new issue. An API error stops
-the run; inspect it before retrying rather than repeatedly issuing writes.
+Maintain the roadmap through normal GitHub issue editing and triage. Do not regenerate
+or overwrite issue bodies from repository data. Close stale, duplicated, completed,
+or unsupported proposals with a clear explanation rather than preserving a target count.
