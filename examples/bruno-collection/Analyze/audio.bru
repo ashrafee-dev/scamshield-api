@@ -1,0 +1,38 @@
+meta {
+  name: Analyze audio
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{baseUrl}}/audio
+  body: multipartForm
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{SCAMSHIELD_API_KEY}}
+}
+
+body:multipart-form {
+  file: @file(../../tests/test_audio.m4a)
+}
+
+assert {
+  res.status: eq 200
+  res.body.label: isString
+  res.body.score: isString
+  res.body.certainty: isNumber
+  res.body.reason: isString
+}
+
+tests {
+  test("assessment uses the documented enums and ranges", function () {
+    const result = res.getBody();
+    expect(["Scam", "Scam Likely", "Safe"]).to.include(result.label);
+    expect(["High", "Medium", "Low"]).to.include(result.score);
+    expect(Number.isInteger(result.certainty)).to.equal(true);
+    expect(result.certainty).to.be.within(0, 100);
+    expect(result.reason.length).to.be.within(1, 2000);
+  });
+}
