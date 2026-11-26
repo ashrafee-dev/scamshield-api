@@ -1,0 +1,32 @@
+meta {
+  name: Analyze text (invalid token)
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{baseUrl}}/text
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: invalid-fake-token-for-401-demo
+}
+
+body:json {
+  {
+    "body": "This request is expected to be rejected."
+  }
+}
+
+assert {
+  res.status: eq 401
+  res.body.detail: eq Invalid or missing bearer token
+}
+
+tests {
+  test("401 asks the client for a bearer token", function () {
+    expect(res.getHeader("www-authenticate")).to.equal("Bearer");
+  });
+}
